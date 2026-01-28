@@ -7,24 +7,25 @@ modules:
 
   - type: dnf
     install:
-      - edk2-ovmf
-      - guestfs-tools
-      - libvirt
-      - libvirt-nss
-      - osbuild-selinux
-      - qemu
-      - qemu-char-spice
-      - qemu-device-display-virtio-gpu
-      - qemu-device-display-virtio-vga
-      - qemu-device-usb-redirect
-      - qemu-img
-      - qemu-system-x86-core
-      - qemu-user-binfmt
-      - qemu-user-static
-      - virt-install
-      - virt-manager
-      - virt-top
-      - virt-viewer
+      packages:
+        - edk2-ovmf
+        - guestfs-tools
+        - libvirt
+        - libvirt-nss
+        - osbuild-selinux
+        - qemu
+        - qemu-char-spice
+        - qemu-device-display-virtio-gpu
+        - qemu-device-display-virtio-vga
+        - qemu-device-usb-redirect
+        - qemu-img
+        - qemu-system-x86-core
+        - qemu-user-binfmt
+        - qemu-user-static
+        - virt-install
+        - virt-manager
+        - virt-top
+        - virt-viewer
 
   - type: systemd
     system:

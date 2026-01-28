@@ -8,11 +8,12 @@ modules:
     repos:
       - https://download.docker.com/linux/fedora/docker-ce.repo
     install:
-      - containerd.io
-      - docker-ce
-      - docker-ce-cli
-      - docker-buildx-plugin
-      - docker-compose-plugin
+      packages:
+        - containerd.io
+        - docker-ce
+        - docker-ce-cli
+        - docker-buildx-plugin
+        - docker-compose-plugin
 
   - type: systemd
     system:
