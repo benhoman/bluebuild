@@ -6,7 +6,8 @@ modules:
 
   - type: dnf
     repos:
-      - https://download.docker.com/linux/fedora/docker-ce.repo
+      files:
+        - https://download.docker.com/linux/fedora/docker-ce.repo
     install:
       packages:
         - containerd.io

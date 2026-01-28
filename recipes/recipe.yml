@@ -1,0 +1,334 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+# image will be published to ghcr.io/benhoman/ublue-sway
+
+name: ublue-sway
+description: ublue sway
+base-image: quay.io/fedora-ostree-desktops/sway-atomic
+image-version: 43
+
+modules:
+  # SDDM Display Manager
+  - type: dnf
+    install:
+      packages:
+        - sddm
+        - sddm-themes
+        - qt5-qtgraphicaleffects
+        - qt5-qtquickcontrols2
+        - qt5-qtsvg
+        - kwallet
+        - pam-kwallet
+
+  - type: script
+    scripts:
+      - setsddmtheming.sh
+
+  - type: systemd
+    system:
+      enabled:
+        - sddm-boot.service
+
+  # Common System Files
+  - type: files
+    files:
+      - source: system/etc
+        destination: /etc
+
+  # DNF Packages and Repositories
+  - type: dnf
+    repos:
+      cleanup: true
+      files:
+        - https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
+        - https://mise.jdx.dev/rpm/mise.repo
+        - https://download.docker.com/linux/fedora/docker-ce.repo
+      copr:
+        - atim/starship
+        - trixieua/mutter-patched
+        - scottames/ghostty
+      keys:
+        - https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
+      nonfree: rpmfusion
+    install:
+      packages:
+        - repo: brave-browser
+          packages:
+            - brave-browser
+        - starship
+        - mise
+        - containerd.io
+        - docker-ce
+        - docker-ce-cli
+        - docker-buildx-plugin
+        - docker-compose-plugin
+
+        # userspace
+        - alsa-firmware
+        - dbus-daemon
+        - dbus-tools
+        - ddcutil
+        - fish
+        - fprintd-pam
+        - gnome-disk-utility
+        - google-noto-emoji-fonts
+        - headsetcontrol
+        - just
+        - mediainfo
+        - nmap-ncat
+        - openssl
+        - p7zip
+        - pavucontrol
+        - playerctl
+        - polkit
+        - python3-i3ipc
+        - qt5-qtwayland
+        - qt6-qtwayland
+        - tuned-ppd
+        - twingate-latest
+        - unrar
+        - vulkan-tools
+        - vulkan-validation-layers
+        - waybar
+        - wireguard-tools
+        - wl-clipboard
+        - xdg-desktop-portal
+        - xdg-desktop-portal-gtk
+        - xdg-user-dirs
+        - xfce-polkit 
+        - xorg-x11-server-Xwayland
+        - zsh
+
+        # sound
+        - wireplumber
+        - pipewire
+        - pamixer
+        - pulseaudio-utils
+
+        # networking
+        - network-manager-applet
+        - NetworkManager-openvpn
+        - NetworkManager-openvpn-gnome
+        - NetworkManager-openconnect
+        - NetworkManager-openconnect-gnome
+        - bluez
+        - bluez-tools
+        - blueman
+        - firewall-config
+
+        # file manager
+        - thunar
+        - thunar-archive-plugin 
+        - thunar-volman
+        - xarchiver
+        - imv
+        - gvfs-mtp
+        - gvfs-gphoto2
+        - gvfs-smb
+        - gvfs-nfs
+        - gvfs-fuse
+        - gvfs-archive
+        - android-tools
+
+        # theme and GUI
+        - fontawesome-fonts-all
+        - gnome-themes-extra
+        - gnome-icon-theme
+        - paper-icon-theme
+        - breeze-icon-theme 
+        - papirus-icon-theme
+
+        # Apps
+        - ghostty
+      exclude:
+        - alacritty
+
+  # Homebrew
+  - type: brew
+    nofile-limits: true
+    brew-analytics: false
+
+  # Bling modules
+  - type: bling
+    install:
+      - 1password
+      - dconf-update-service
+
+  # Signing setup
+  - type: signing
+
+  # # Kernel and akmods
+  # - type: containerfile
+  #   snippets:
+  #     - COPY --from=ghcr.io/ublue-os/akmods:main-43 /rpms /tmp/rpms
+  #     - RUN find /tmp/rpms
+  #     - RUN rpm -q ublue-os-akmods-addons || rpm-ostree install /tmp/rpms/ublue-os/ublue-os-akmods-addons*.rpm
+  #
+  # - type: containerfile
+  #   snippets:
+  #     - COPY --from=ghcr.io/ublue-os/main-kernel:43 /tmp/rpms /tmp/rpms/kernel
+  #
+  # - type: script
+  #   scripts:
+  #     - installsignedkernel.sh
+
+  # uBlue OS config
+  - type: containerfile
+    snippets:
+      - RUN rpm-ostree install just powerstat
+      - COPY --from=ghcr.io/ublue-os/config:latest /rpms/ublue-os-udev-rules.noarch.rpm /
+      - COPY --from=ghcr.io/ublue-os/config:latest /rpms/ublue-os-update-services.noarch.rpm /
+      - COPY --from=ghcr.io/ublue-os/config:latest /rpms/ublue-os-signing.noarch.rpm /
+      - COPY --from=ghcr.io/ublue-os/config:latest /rpms/ublue-os-luks.noarch.rpm /
+      - COPY --from=ghcr.io/ublue-os/config:latest /rpms/ublue-os-just.noarch.rpm /
+      - RUN rpm -ivh /ublue-os-udev-rules.noarch.rpm
+      - RUN rpm -ivh /ublue-os-update-services.noarch.rpm
+      - RUN rpm -ivh /ublue-os-signing.noarch.rpm
+      - RUN rpm -ivh /ublue-os-luks.noarch.rpm
+      - RUN rpm -ivh /ublue-os-just.noarch.rpm
+
+  # System setup scripts
+  - type: script
+    scripts:
+      - installandroidudev.sh
+      - installrpmfusion.sh
+      - ensureautoupdates.sh
+      - fixupstreamicdloaderbug.sh
+
+  # Sway-specific files
+  - type: files
+    files:
+      - source: sway/etc
+        destination: /etc
+      - source: sway/usr
+        destination: /usr
+
+  # Proprietary packages
+  - type: script
+    scripts:
+      - installproprietarypackages.sh
+
+  # Media codecs
+  - type: dnf
+    install:
+      packages:
+        - heif-pixbuf-loader
+        - ffmpeg
+        - ffmpeg-libs
+        - ffmpegthumbnailer
+        - pipewire-libs-extra
+        - libfdk-aac
+        - gstreamer1-plugins-bad
+        - gstreamer1-plugins-ugly 
+    remove:
+      packages:
+        - gstreamer1-plugins-bad-free
+        - gstreamer1-plugins-bad-free-libs
+        - gstreamer1-plugins-ugly-free
+        - fdk-aac-free
+        - ffmpeg-free
+        - libavcodec-free  
+        - libavdevice-free
+        - libavfilter-free
+        - libavformat-free  
+        - libavutil-free  
+        - libpostproc-free  
+        - libswresample-free  
+        - libswscale-free  
+
+  # Cleanup repos
+  - type: script
+    scripts:
+      - removeunusedrepos.sh
+
+  # GSchema overrides
+  - type: gschema-overrides
+    include:
+      - zz1-secureblue-theming.gschema.override
+
+  # Brew just import
+  - type: script
+    scripts:
+      - addbrewjustimport.sh
+
+  # Sway window manager packages
+  - type: dnf
+    install:
+      packages:
+        - foot
+        - swaylock
+        - swayidle
+        
+        # launcher
+        - rofi-wayland
+        - bemenu
+        - j4-dmenu-desktop
+        - wofi
+
+        # screenshot
+        - slurp
+        - grim
+
+        # display
+        - wlr-randr
+        - wlsunset
+        - brightnessctl
+        - kanshi
+
+        # notifications
+        - dunst
+        - mako
+
+  # Fonts
+  - type: fonts
+    fonts:
+      nerd-fonts:
+        - FiraCode
+        - Hack
+        - SourceCodePro
+        - JetBrainsMono
+        - NerdFontsSymbolsOnly
+      google-fonts:
+        - Roboto
+        - Open Sans
+
+  # Flatpaks
+  - type: systemd
+    system:
+      enabled:
+        - flatpak-system-update.timer
+    user:
+      enabled:
+        - flatpak-user-update.timer
+
+  - type: default-flatpaks
+    notify: true
+    system:
+      install:
+        - org.mozilla.firefox
+        - re.sonny.Junction
+        - com.google.Chrome
+        - com.discordapp.Discord
+        - com.spotify.Client
+        - md.obsidian.Obsidian
+        - org.telegram.desktop
+        - com.visualstudio.code
+        - io.missioncenter.MissionCenter
+        - io.github.flattool.Warehouse
+        - com.github.tchx84.Flatseal
+        - org.gnome.Extensions
+        - org.libreoffice.LibreOffice
+        - com.slack.Slack
+    user: {}
+
+  # Docker service
+  - type: systemd
+    system:
+      enabled:
+        - docker.socket
+
+  # Final cleanup
+  - type: script
+    scripts:
+      - removeunusedrepos.sh
+      - regenerateinitramfs.sh
