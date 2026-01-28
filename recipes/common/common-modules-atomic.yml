@@ -1,13 +1,13 @@
 modules:
   - type: containerfile
     snippets:
-      - COPY --from=ghcr.io/ublue-os/akmods:main-41 /rpms /tmp/rpms
+      - COPY --from=ghcr.io/ublue-os/akmods:main-43 /rpms /tmp/rpms
       - RUN find /tmp/rpms
       - RUN rpm -q ublue-os-akmods-addons || rpm-ostree install /tmp/rpms/ublue-os/ublue-os-akmods-addons*.rpm
 
   - type: containerfile
     snippets:
-      - COPY --from=ghcr.io/ublue-os/main-kernel:41 /tmp/rpms /tmp/rpms/kernel
+      - COPY --from=ghcr.io/ublue-os/main-kernel:43 /tmp/rpms /tmp/rpms/kernel
 
   - type: script
     scripts:
@@ -46,7 +46,7 @@ modules:
       # - settheming.sh
       - installproprietarypackages.sh
 
-  - type: rpm-ostree
+  - type: dnf
     install:
       - heif-pixbuf-loader
       - ffmpeg
@@ -83,5 +83,3 @@ modules:
     scripts:
       # - settheming.sh
       - addbrewjustimport.sh
-
-  # - type: signing # this sets up the proper policy & signing files for signed images to work fully

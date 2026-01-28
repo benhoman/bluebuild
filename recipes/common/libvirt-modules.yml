@@ -5,7 +5,7 @@ modules:
       - source: libvirt/usr
         destination: /usr
 
-  - type: rpm-ostree
+  - type: dnf
     install:
       - edk2-ovmf
       - guestfs-tools

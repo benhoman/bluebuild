@@ -3,7 +3,7 @@
 name: sway
 description: ublue sway
 base-image: quay.io/fedora-ostree-desktops/sway-atomic
-image-version: 41
+image-version: 43
 
 modules:
   - from-file: common/sddm-modules.yml
@@ -12,6 +12,6 @@ modules:
   - from-file: common/flatpak.yml
   - from-file: common/fonts.yml
   - from-file: common/docker-modules.yml
-  - from-file: common/libvirt-modules.yml
+  # - from-file: common/libvirt-modules.yml
   - from-file: common/sway-modules.yml
   - from-file: common/final-modules.yml

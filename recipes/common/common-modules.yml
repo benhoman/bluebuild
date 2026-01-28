@@ -4,111 +4,126 @@ modules:
       - source: system/etc
         destination: /etc
 
-  - type: rpm-ostree
-    repos:
-      - https://mise.jdx.dev/rpm/mise.repo
-      - https://copr.fedorainfracloud.org/coprs/wezfurlong/wezterm-nightly/repo/fedora-%OS_VERSION%/wezfurlong-wezterm-nightly-fedora-%OS_VERSION%.repo
-      - https://copr.fedorainfracloud.org/coprs/pgdev/ghostty/repo/fedora-%OS_VERSION%/pgdev-ghostty-fedora-%OS_VERSION%.repo
-    keys:
-      - https://downloads.1password.com/linux/keys/1password.asc
+  - type: bling
     install:
-
-    # userspace
-      # - bat
-      # - exa
-      # - fd-find
-      # - fzf
-      # - distrobox
-      # - mise
-      # - neovim
-      # - ripgrep
-      # - thefuck
-      # - tmux
-      # - zoxide
-
-    # environment
-      - alsa-firmware
-      - dbus-daemon
-      - dbus-tools
-      - ddcutil
-      - fish
-      - fprintd-pam
-      - gnome-disk-utility
-      - google-noto-emoji-fonts
-      - headsetcontrol
-      - just
-      - mediainfo
-      - nmap-ncat
-      - openssl
-      - p7zip
-      - pavucontrol
-      - playerctl
-      - polkit
-      - python3-i3ipc
-      - qt5-qtwayland
-      - qt6-qtwayland
-      - tuned-ppd
-      - twingate-latest
-      - unrar
-      - vulkan-tools
-      - vulkan-validation-layers
-      - waybar
-      - wireguard-tools
-      - wl-clipboard
-      - xdg-desktop-portal
-      - xdg-desktop-portal-gtk
-      - xdg-user-dirs
-      - xfce-polkit 
-      - xorg-x11-server-Xwayland
-      - zsh
-      
-    # sound
-      - wireplumber
-      - pipewire
-      - pamixer
-      - pulseaudio-utils
-
-    # networking
-      - network-manager-applet
-      - NetworkManager-openvpn
-      - NetworkManager-openvpn-gnome
-      - NetworkManager-openconnect
-      - NetworkManager-openconnect-gnome
-      - bluez
-      - bluez-tools
-      - blueman
-      - firewall-config
-
-    # file manager
-      - thunar
-      - thunar-archive-plugin 
-      - thunar-volman
-      - xarchiver
-      - imv
-      - p7zip
-      - gvfs-mtp
-      - gvfs-gphoto2
-      - gvfs-smb
-      - gvfs-nfs
-      - gvfs-fuse
-      - gvfs-archive
-      - android-tools
-
-    # theme and GUI
-      - fontawesome-fonts-all
-      - gnome-themes-extra
-      - gnome-icon-theme
-      - paper-icon-theme
-      - breeze-icon-theme 
-      - papirus-icon-theme
-
-    # Apps
-      - kitty
-      - ghostty
       - 1password
 
-  - type: script
-    scripts:
-      - starship.sh
+  - type: dnf
+    repos:
+      cleanup: true # clean up added repos after module is done
+      files:
+        - https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
+        - https://mise.jdx.dev/rpm/mise.repo
+      copr:
+        - atim/starship
+        - trixieua/mutter-patched
+        - scottames/ghostty
+      keys:
+        - https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
+      nonfree: rpmfusion
+    install:
+      packages:
+        - repo: brave-browser
+          packages:
+            - brave-browser
+        - starship
+        - mise
+        # userspace
+        # - bat
+        # - exa
+        # - fd-find
+        # - fzf
+        # - distrobox
+        # - mise
+        # - neovim
+        # - ripgrep
+        # - thefuck
+        # - tmux
+        # - zoxide
+
+        # environment
+        - alsa-firmware
+        - dbus-daemon
+        - dbus-tools
+        - ddcutil
+        - fish
+        - fprintd-pam
+        - gnome-disk-utility
+        - google-noto-emoji-fonts
+        - headsetcontrol
+        - just
+        - mediainfo
+        - nmap-ncat
+        - openssl
+        - p7zip
+        - pavucontrol
+        - playerctl
+        - polkit
+        - python3-i3ipc
+        - qt5-qtwayland
+        - qt6-qtwayland
+        - tuned-ppd
+        - twingate-latest
+        - unrar
+        - vulkan-tools
+        - vulkan-validation-layers
+        - waybar
+        - wireguard-tools
+        - wl-clipboard
+        - xdg-desktop-portal
+        - xdg-desktop-portal-gtk
+        - xdg-user-dirs
+        - xfce-polkit 
+        - xorg-x11-server-Xwayland
+        - zsh
+
+        # sound
+        - wireplumber
+        - pipewire
+        - pamixer
+        - pulseaudio-utils
+
+        # networking
+        - network-manager-applet
+        - NetworkManager-openvpn
+        - NetworkManager-openvpn-gnome
+        - NetworkManager-openconnect
+        - NetworkManager-openconnect-gnome
+        - bluez
+        - bluez-tools
+        - blueman
+        - firewall-config
+
+        # file manager
+        - thunar
+        - thunar-archive-plugin 
+        - thunar-volman
+        - xarchiver
+        - imv
+        - p7zip
+        - gvfs-mtp
+        - gvfs-gphoto2
+        - gvfs-smb
+        - gvfs-nfs
+        - gvfs-fuse
+        - gvfs-archive
+        - android-tools
+
+        # theme and GUI
+        - fontawesome-fonts-all
+        - gnome-themes-extra
+        - gnome-icon-theme
+        - paper-icon-theme
+        - breeze-icon-theme 
+        - papirus-icon-theme
+
+        # Apps
+        - ghostty
+      exclude:
+        - alacritty
+
+  - type: brew
+    nofile-limits: true
+    brew-analytics: false
 
   - type: signing # this sets up the proper policy & signing files for signed images to work fully
